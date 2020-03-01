@@ -24,8 +24,8 @@ def make_app():
 app = make_app()
 CORS(app)
 
-# cache_host = 'redis' if os.getenv('ENV') == 'docker' else os.getenv("REDIS_URL", "")
-cache = redis.from_url(os.environ.get("REDIS_URL"))
+cache_host = 'redis' if os.getenv('ENV') == 'docker' else os.getenv("REDIS_URL", "")
+cache = redis.StrictRedis(host=cache_host, port=6379)
 
 
 @dataclass
