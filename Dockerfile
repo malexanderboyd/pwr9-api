@@ -1,6 +1,5 @@
-FROM python:3.8-slim
+FROM python:3.7-slim
 WORKDIR /app
-ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 RUN pip install gunicorn
 
 COPY requirements.txt ./
