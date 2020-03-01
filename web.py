@@ -238,24 +238,21 @@ def create_game():
 
 
 def start_game(game_id, game_port, game_options):
-    if os.getenv("ENV") == "dev":
-        import docker
-        client = docker.from_env()
+    import docker
+    client = docker.from_env()
 
-        container_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', game_options.get('gameTitle'))
-        container = client.containers.run("pwr9/godr4ft", f"/main -port={game_port} -gameId={game_id}",
+    container_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', game_options.get('gameTitle'))
+    container = client.containers.run("pwr9/godr4ft", f"/main -port={game_port} -gameId={game_id}",
                                           ports={f'{game_port}/tcp': game_port},
                                           name=container_name, detach=True)
-        while container.status != "running":
-            container.reload()
-            if container.status == 'exited':
-                break
-            pass
+    while container.status != "running":
+        container.reload()
         if container.status == 'exited':
-            return False
-        return True
-    else:
-        container_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', game_options.get('gameTitle'))
+            break
+        pass
+    if container.status == 'exited':
+        return False
+    return True
 
 
 def find_available_port():
