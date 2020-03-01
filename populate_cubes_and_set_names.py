@@ -1,17 +1,13 @@
-import io
 import pathlib
-import zipfile
 from collections import defaultdict
 
 import requests
 import os
 import json
-import datetime
 from dataclasses import dataclass, asdict, field
 import redis
 
-# cache_host = 'redis' if os.getenv('ENV') == 'docker' else 'localhost'
-cache_host = "18.221.34.109"
+cache_host = os.getenv('REDIS_URL', 'localhost')
 cache = redis.StrictRedis(host=cache_host, port=6379)
 
 

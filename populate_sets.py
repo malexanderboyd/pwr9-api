@@ -8,7 +8,7 @@ import requests
 from datetime import datetime
 
 
-cache_host = 'redis' if os.getenv('ENV') == 'docker' else '18.221.34.109'
+cache_host = os.getenv('REDIS_URL', 'localhost')
 cache = redis.StrictRedis(host=cache_host, port=6379)
 
 def cache_data(key: str, json_data: dict):
