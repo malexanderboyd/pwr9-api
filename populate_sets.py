@@ -8,8 +8,8 @@ import requests
 from datetime import datetime
 
 
-cache_host = os.getenv('REDIS_URL', 'localhost')
-cache = redis.StrictRedis(host=cache_host, port=6379)
+# cache_host = os.getenv('REDIS_URL', 'localhost')
+cache = redis.from_url(os.environ.get("REDIS_URL"))
 
 def cache_data(key: str, json_data: dict):
     try:
