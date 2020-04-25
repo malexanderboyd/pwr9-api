@@ -118,23 +118,21 @@ def set_booster(identifier):
             res = cache.get(f"set_{identifier.lower()}")
             set = json.loads(res.decode("utf-8"))
 
-            def _is_basic_land(card_type_line) -> bool:
-                if not card_type_line:
+            def _is_basic_land(card_typeline) -> bool:
+                if not card_typeline:
                     return False
-                return (
-                    re.match(r"basic land", card_type_line, re.IGNORECASE) is not None
-                )
+                return "basic land" in card_typeline.lower()
 
             def is_english_card(card_lang) -> bool:
-                return card_lang.lower() == "en" if card_lang else False
+                return card_lang.lower() == "en" if card_lang else True
 
             def sort_set(set: list) -> SortedSet:
 
                 _sorted_set = defaultdict(list)
                 for card in set:
-                    if not _is_basic_land(card.get("type_line")) and is_english_card(
-                        card.get("lang")
-                    ):
+                    if not _is_basic_land(
+                        card.get("type", card.get("type_line"))
+                    ) and is_english_card(card.get("lang")):
                         _sorted_set[card.get("rarity")].append(card)
 
                 return SortedSet(
@@ -257,11 +255,10 @@ def create_game():
 
 
 def find_available_port():
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-        s.bind(("", 0))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        return s.getsockname()[1]
+    next_port = cache.get("next_port").decode("utf-8")
+    cache.incr("next_port")
+    return next_port
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=os.getenv("PORT", 8081))
+    app.run(host="0.0.0.0", port=os.getenv("PORT", 8002))
