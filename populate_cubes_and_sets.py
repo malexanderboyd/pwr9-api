@@ -175,25 +175,24 @@ def download_set_cards(sets: dict):
 
 
 mtg_version = get_version()
-# mtg_set_data = download_new_mtg_sets()
-#
-# with open(
-#     pathlib.Path("data").joinpath(
-#         f"sets-{datetime.now().isoformat()}-{mtg_version.version}.json"
-#     ),
-#     "w",
-# ) as sets_file:
-#     sets_file.write(json.dumps(mtg_set_data))
+mtg_set_data = download_new_mtg_sets()
 
-# for set, blocks in mtg_set_data.items():
-#     for i, block in enumerate(blocks):
-#         cache_data(f"set_{block.get('id').lower()}", block.get("cards"))
-#         del mtg_set_data[set][i]["cards"]
-#
-# cache_data("sets", mtg_set_data)
+with open(
+    pathlib.Path("data").joinpath(
+        f"sets-{datetime.now().isoformat()}-{mtg_version.version}.json"
+    ),
+    "w",
+) as sets_file:
+    sets_file.write(json.dumps(mtg_set_data))
 
+for set, blocks in mtg_set_data.items():
+    for i, block in enumerate(blocks):
+        cache_data(f"set_{block.get('id').lower()}", block.get("cards"))
+        del mtg_set_data[set][i]["cards"]
 
+cache_data("sets", mtg_set_data)
 cache_data("sets_version", asdict(mtg_version))
+cache.set("next_port", 9000)
 
 with open(pathlib.Path("data").joinpath("cubes.json"), "r") as cubes_file:
     cache_data("cubes", json.load(cubes_file))
