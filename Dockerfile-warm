@@ -1,9 +1,8 @@
-FROM python:3
+FROM python:3.8-slim
 WORKDIR /tmp
 COPY requirements.txt ./
+RUN pip install -r requirements.txt
 
-RUN mkdir data && pip install -r requirements.txt
 COPY data/cubes.json ./data/cubes.json
 COPY populate_cubes_and_sets.py ./run.py
-
 CMD ["python", "run.py"]

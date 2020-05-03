@@ -1,12 +1,9 @@
 import json
 import os
 import random
-import re
 import secrets
-import socket
 from collections import defaultdict
 from collections import namedtuple
-from contextlib import closing
 from dataclasses import dataclass
 
 import redis

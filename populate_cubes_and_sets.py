@@ -7,9 +7,16 @@ import os
 import json
 from dataclasses import dataclass, asdict, field
 import redis
+import sys
 
-cache_host = os.getenv("REDIS_URL", "localhost")
+cache_host = os.getenv("REDIS_URL", "127.0.0.1")
 cache = redis.StrictRedis(host=cache_host, port=6379)
+
+try:
+    cache.ping()
+except Exception as e:
+    print(f"Cannot connect to cache, exiting. {cache_host=}")
+    sys.exit(1)
 
 
 @dataclass
@@ -119,12 +126,13 @@ def download_new_mtg_sets():
         if res.ok:
             sets = res.json()
             set_blocks = defaultdict(list)
-            for set_id, set_info in sets.items():
+            sets_info = sets.get("data", sets)
+            for set_id, set_info in sets_info.items():
                 block = set_info.get("block", "Extras")
                 set_blocks[block].append(
                     dict(
                         name=set_info.get("name"),
-                        id=set_id,
+                        code=set_info.get("code"),
                         cards=set_info.get("cards"),
                     )
                 )
@@ -187,7 +195,7 @@ with open(
 
 for set, blocks in mtg_set_data.items():
     for i, block in enumerate(blocks):
-        cache_data(f"set_{block.get('id').lower()}", block.get("cards"))
+        cache_data(f"set_{block.get('code').lower()}", block.get("cards"))
         del mtg_set_data[set][i]["cards"]
 
 cache_data("sets", mtg_set_data)
